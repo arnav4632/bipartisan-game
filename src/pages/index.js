@@ -27,7 +27,7 @@ const Home = () => {
         <div className="mt-12 text-center text-xl">
           <p>
             <a>
-              “It's silly that a country that prides itself on choice allows only two.” - Bill Maher <br /> <br />
+              “It&apos;s silly that a country that prides itself on choice allows only two.” - Bill Maher <br /> <br />
             </a>
           </p>
         </div>
