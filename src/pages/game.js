@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Papa from "papaparse";
 import Ticker from "./components/Ticker";
 
 const goodFeedback = [
@@ -32,42 +31,44 @@ const Game = () => {
         key: 0,
     });
 
-    const fetchBill = async () => {
-        const file = Math.random() < 0.5 ? "/dem_bills.csv" : "/rep_bills.csv";
-        const res = await fetch(file);
-        const csv = await res.text();
+    const [billQueue, setBillQueue] = useState([]);
 
-        Papa.parse(csv, {
-            complete: ({ data }) => {
-                const bills = data.slice(4);
-                const line = bills[Math.floor(Math.random() * bills.length)];
-
-                const summary = line.slice(-1)[0]?.replace(/<[^>]+>/g, "")?.trim() || "Sorry, no summary provided";
-                const chunks = Array.from({ length: Math.ceil(summary.length / 600) }, (_, i) =>
-                    summary.slice(i * 600, (i + 1) * 600)
-                );
-
-                setState((s) => ({
-                    ...s,
-                    bill: {
-                        title: line[3],
-                        legislationNumber: line[0],
-                        url: line[1],
-                        cosponsors: line[2],
-                        summary,
-                    },
-                    party: file.includes("dem") ? "Democratic" : "Republican",
-                    summaryChunks: chunks,
-                }));
-
-                window.Party = file.includes("dem") ? "Democratic" : "Republican";
-            },
-            header: false,
-            skipEmptyLines: true,
-        });
+    const fetchBills = async () => {
+        const res = await fetch("/api/random-bills");
+        const data = await res.json();
+        setBillQueue(data);
+        loadBill(data[0]);
     };
 
-    useEffect(() => { fetchBill(); }, [state.key]);
+    const loadBill = (bill) => {
+        const summary = bill.summary;
+        const chunks = Array.from({ length: Math.ceil(summary.length / 600) }, (_, i) =>
+            summary.slice(i * 600, (i + 1) * 600)
+        );
+
+        setState((s) => ({
+            ...s,
+            bill: {
+                title: bill.title,
+                legislationNumber: bill.legislationNumber,
+                url: bill.url,
+                cosponsors: bill.cosponsors,
+                summary
+            },
+            party: bill.party,
+            summaryChunks: chunks,
+        }));
+
+        window.Party = bill.party;
+    };
+
+    useEffect(() => {
+        if (billQueue.length === 0) {
+            fetchBills();
+        } else {
+            loadBill(billQueue[0]);
+        }
+    }, [state.key]);
 
     const handleGuess = (guess) => {
         const correct = guess === state.party;
@@ -90,7 +91,9 @@ const Game = () => {
         }));
     };
 
-    const handleNext = () =>
+    const handleNext = () => {
+        const newQueue = billQueue.slice(1);
+        setBillQueue(newQueue);
         setState((s) => ({
             ...s,
             guessResult: null,
@@ -100,6 +103,7 @@ const Game = () => {
             currentPage: 0,
             key: s.key + 1,
         }));
+    };
 
     const showSummary = () => (
         <div className="mt-4 text-center">
@@ -131,16 +135,12 @@ const Game = () => {
         <div className="flex flex-col min-h-screen bg-gray-100 p-8" style={{ background: getBackground(state.correctStreak, state.wrongStreak) }}>
             <h1 className="text-4xl font-bold text-center text-gray-800 mb-4">Let’s Play the Game!</h1>
 
-            {/* Link in the top-right corner */}
             <div className="absolute top-4 right-4 text-sm">
                 <a href="/data" className="text-blue-600 underline">Where is this data coming from?</a>
             </div>
 
             <div className="absolute top-4 left-4 text-xl font-semibold text-gray-800">
-                <p>
-                    Streak: {state.correctStreak}
-                    {state.correctStreak >= 3 && " 🔥"}
-                </p>
+                <p>Streak: {state.correctStreak}{state.correctStreak >= 3 && " 🔥"}</p>
                 <p>
                     Accuracy: {state.totalGuesses === 0 ? "0" : Math.round((state.correctGuesses / state.totalGuesses) * 100)}%
                     {(state.correctGuesses / state.totalGuesses) >= .8 && " 🔥😎"}
