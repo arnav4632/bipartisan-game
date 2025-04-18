@@ -23,7 +23,7 @@ const Home = () => {
                         >
                             congress.gov
                         </a>
-                        . we ran two searches: one filtered for republican sponsors, one for democrats.
+                        .I ran two searches: one filtered for republican sponsors, one for democrats.
                         grabbed the top 2,500 bills (sorted by cosponsors).
                         <br />
                         <span className="text-sm text-gray-600">
