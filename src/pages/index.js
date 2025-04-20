@@ -17,7 +17,7 @@ const Home = () => {
             </button>
           </Link>
 
-          <Link href="/about">
+          <Link href="/faq">
             <button className="rounded-full bg-gray-800 text-white px-8 py-4 hover:bg-gray-700 transition text-xl">
               Learn More
             </button>

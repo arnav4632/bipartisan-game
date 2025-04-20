@@ -14,7 +14,7 @@ const Home = () => {
                         Q: Where’d you get the legislative data from?
                     </p>
                     <p className="text-lg leading-relaxed">
-                        A: all bills were pulled straight from{" "}
+                        A: All bills were pulled straight from{" "}
                         <a
                             href="https://www.congress.gov/search?q=%7B%22congress%22%3A%5B%22119%22%2C%22118%22%2C%22117%22%2C%22116%22%2C%22115%22%2C%22114%22%2C%22113%22%2C%22112%22%2C%22111%22%5D%2C%22source%22%3A%22legislation%22%2C%22party%22%3A%22Democratic%22%2C%22type%22%3A%5B%22bills%22%2C%22resolutions%22%5D%2C%22bill-status%22%3A%5B%22committee%22%2C%22floor%22%2C%22failed-one%22%2C%22passed-one%22%2C%22passed-both%22%2C%22resolving%22%2C%22president%22%2C%22veto%22%2C%22law%22%5D%7D&id=115403&pageSort=billCosponsorCount%3Adesc"
                             className="text-blue-600 underline hover:text-blue-800"
